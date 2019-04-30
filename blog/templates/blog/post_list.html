@@ -1,0 +1,19 @@
+<!-- This will act as the homepage showing a list of all blog posts -->
+{% extends 'blog/base.html'%}
+
+{% block content %}
+<div class="centerstage">
+    {% for post in post_list %}
+    <div class="post">
+        <!-- Add two links to take user to post detail by clicking either title or comment count -->
+        <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
+        <!-- Add section for date/time formatting -->
+        <div class="date">
+            <p>Published on: {{ post.published_date|date:"D M Y" }}</p>
+        </div>
+        <a href="% url 'post_detail' pk=post.pk %">Comments: {{ post.approve_comments.count }}</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+<!-- This page will flow into the post_detail page -->

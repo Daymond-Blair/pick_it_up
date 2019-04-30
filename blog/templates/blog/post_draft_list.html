@@ -1,0 +1,15 @@
+<!-- Iterate through all posts and show creation date with a link to each posts detail page -->
+{% extends 'blog/base.html'%}
+
+{% block content %}
+{% for post in posts %}
+<div class="post">
+    <p class="date">created: {{post.created_date|date:'d-m-Y'}}</p>
+    <h1><a href="{url 'post_detail' pk=post.pk}">{{post.title}}</a></h1>
+    <!-- Truncate characters to provide more of a preview look -->
+    <p>{{post.text|truncatechars:200}}</p>
+</div>
+
+{% endfor %}
+
+{% endblock %}

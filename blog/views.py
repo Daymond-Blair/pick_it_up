@@ -1,15 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from blog.models import Post, Comment
 from django.views.generic import (
-    TemplateView, ListView, CreateView, UpdateView, DeleteView)
+    TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from blog.forms import PostForm, CommentForm
 from django.urls import reverse_lazy
-from django.utils.timezone import timezone
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
+
 class AboutView(TemplateView):
-    template_name = 'about.html'
+    template_name = 'blog/about.html'
 
 
 class PostListView(ListView):
@@ -18,6 +19,10 @@ class PostListView(ListView):
     # get_queryset is like a SQL query but for models; it allows us to query the PostListView for objects (posts) and filter them by published date
     def get_queryset(self):
         return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+
+
+class PostDetailView(DetailView):
+    model = Post
 
 
 # CRUD views
@@ -37,22 +42,21 @@ class PostUpdateView(UpdateView, LoginRequiredMixin):
 
 
 class PostDeleteView(DeleteView, LoginRequiredMixin):
-
     model = Post
     success_url = reverse_lazy('post_list')
 
 
 class DraftListView(ListView, LoginRequiredMixin):
     login_url = '/login/'
-    redirect_field_name = 'blog/post_list.html'
+    redirect_field_name = 'blog/post_draft_list.html'
     model = Post
 
     def get_queryset(self):
-        return Post.objects.filter(published_date_isnull=True).order_by('created_date')
+        return Post.objects.filter(published_date__isnull=True).order_by('created_date')
 
 
 # add login decorator such that only logged in users may use this view and post comments
-
+# add functions that require a matching primary key - this will need to be reflected when linking to templates
 @login_required
 def post_publish(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -91,4 +95,3 @@ def comment_remove(request, pk):
     post_pk = comment.post.pk
     comment.delete()
     return redirect('post_detail', pk=post_pk)
-

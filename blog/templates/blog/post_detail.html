@@ -1,0 +1,60 @@
+<!-- This page flows from the post_list homepage, it contains the details for each individual homepage post -->
+{% extends 'blog/base.html'%}
+{% block content %}
+
+<!-- Inject title into h1 -->
+<h1 class="posttitle loader">{{post.title}}</h1>
+<!-- If there is a publication date create a calss and inject the published date-->
+{% if post.published_date %}
+<div class="date postdate">{{post.published_date}}</div>
+
+<!-- If there is no publication date, create button that links to the post_publish page -->
+{% else %}
+<a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}"></a>
+{% endif %}
+<!-- Safe here allows us to prevent element from showing as <tag>content<\tag> on the page by force-converting it
+     linebreaksbr allows html to call a break <br> for us if one appears in the text-->
+<p class="postcontent">{{post.title|safe|linebreaksbr}}</p>
+
+<!-- If user is properly authenticated, show buttons linking to edit and delete pages-->
+{% if user.is_authenticated %}
+<a class="btn btn-primary" href="{% url 'post_edit' pk=post.pk %}">
+    <span class="glyphicon glyphicon-pencil"></span>
+</a>
+
+<a class="btn btn-primary" href="{% url 'post_remove' pk=post.pk %}">
+    <span class="glyphicon glyphicon-remove"></span>
+</a>
+{% endif %}
+
+<hr>
+<!-- Create button to add comment -->
+<a class="btn btn-primary btn-comment" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a>
+
+<!-- Create list of comments -->
+<div class="container">
+    {% for comment in post.comments.all %}
+    <br>
+    <!-- Show creation date if user is authenticated -->
+    {% if user.is_authenticated or comment.approved_comment %}
+    {{comment.created_date}}
+    <!-- If comment is not yet approved, show buttons to either remove comment or approve it -->
+    {% if not comment.approved_comment %}
+    <a class="btn btn-primary" href="{% url 'comment_remove' pk=comment.pk %}">
+        <span class="glyphicon glyphicon-remove"></span>
+    </a>
+
+    <a class="btn btn-primary" href="{% url 'comment_approve' pk=comment.pk %}">
+        <span class="glyphicon glyphicon-ok"></span>
+    </a>
+    {% endif %}
+    <!-- Display safe formatted comment and who posted it -->
+    <p>{{comment.text|safe|linebreaks}}</p>
+    <p>Posted By: {{comment.author}}</p>
+    {% endif %}
+    {% empty %}
+    <p>No Comments</p>
+    {% endfor %}
+</div>
+{% endblock %}
+<!-- Next, flow into Post Form where we can edit or create a new post-->

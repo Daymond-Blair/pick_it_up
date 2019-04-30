@@ -11,8 +11,8 @@ class Post(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     text = models.TextField()  # no max length to cap blogpost
-    create_date = models.DateTimeField(
-        default=timezone.now(), auto_now=False, auto_now_add=False)
+    created_date = models.DateTimeField(
+        default=timezone.now, auto_now=False, auto_now_add=False)
     published_date = models.DateTimeField(
         blank=True, null=True, auto_now=False, auto_now_add=False)  # field can be blank or null in case we don't publish or leave it off entirely
 
@@ -23,7 +23,7 @@ class Post(models.Model):
 
     # show approved comments and hide non-approved ones
     def approve_comments(self):
-        return self.comments.filter(approved_comments=True)
+        return self.comments.filter(approved_comment=True)
 
     # once we create a post redirect to post_detail page for the primary key "pk" of the post which was just created "self.pk"
     def get_absolute_url(self):
@@ -35,14 +35,15 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(
-        "blog.Post", related_name='comments', on_delete=models.CASCADE) # connect each post to a blogpost
+        "blog.Post", related_name='comments', on_delete=models.CASCADE)  # connect each post to a blogpost
     author = models.CharField(max_length=200)
     text = models.TextField()
-    create_date = models.DateTimeField(
-        default=timezone.now(), auto_now=False, auto_now_add=False)
-    approved_comment = models.BooleanField(default=False) # flag if a comment has been approved by setting it to false initially
+    created_date = models.DateTimeField(
+        default=timezone.now, auto_now=False, auto_now_add=False)
+    # flag if a comment has been approved by setting it to false initially
+    approved_comment = models.BooleanField(default=False)
 
-    # this sets a comment to approved which will allow it to be displayed by approved_comments
+    # this sets a comment to approved which will allow it to be displayed by approved_comment
     def approve(self):
         self.approved_comment = True
         self.save()
