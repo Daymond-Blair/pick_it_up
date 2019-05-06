@@ -14,7 +14,7 @@
 {% endif %}
 <!-- Safe here allows us to prevent element from showing as <tag>content<\tag> on the page by force-converting it
      linebreaksbr allows html to call a break <br> for us if one appears in the text-->
-<p class="postcontent">{{post.title|safe|linebreaksbr}}</p>
+<p class="postcontent">{{post.text|safe|linebreaksbr}}</p>
 
 <!-- If user is properly authenticated, show buttons linking to edit and delete pages-->
 {% if user.is_authenticated %}
